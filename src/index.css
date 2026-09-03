@@ -1,0 +1,227 @@
+@import "tailwindcss";
+
+@layer base {
+  * {
+    border-color: rgba(226, 232, 240, 0.8);
+  }
+  body {
+    font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-optical-sizing: auto;
+    background-color: #f8fafc;
+    color: #0f172a;
+    overflow-x: hidden;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', 'Outfit', 'Cairo Play', sans-serif;
+    font-optical-sizing: auto;
+  }
+  code, pre {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+/* Inter Font Utility Classes */
+.font-inter,
+.inter {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
+.niconne-regular {
+  font-family: "Niconne", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.vast-shadow-regular {
+  font-family: "Vast Shadow", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.inter-thin { font-family: "Inter", sans-serif; font-optical-sizing: auto; font-weight: 100; font-style: normal; }
+.inter-extralight { font-family: "Inter", sans-serif; font-optical-sizing: auto; font-weight: 200; font-style: normal; }
+.inter-light { font-family: "Inter", sans-serif; font-optical-sizing: auto; font-weight: 300; font-style: normal; }
+.inter-regular { font-family: "Inter", sans-serif; font-optical-sizing: auto; font-weight: 400; font-style: normal; }
+.inter-medium { font-family: "Inter", sans-serif; font-optical-sizing: auto; font-weight: 500; font-style: normal; }
+.inter-semibold { font-family: "Inter", sans-serif; font-optical-sizing: auto; font-weight: 600; font-style: normal; }
+.inter-bold { font-family: "Inter", sans-serif; font-optical-sizing: auto; font-weight: 700; font-style: normal; }
+.inter-extrabold { font-family: "Inter", sans-serif; font-optical-sizing: auto; font-weight: 800; font-style: normal; }
+.inter-black { font-family: "Inter", sans-serif; font-optical-sizing: auto; font-weight: 900; font-style: normal; }
+
+/* Cairo Play Font Utility & Blue/Green Accents */
+.font-cairo-play,
+.cairo-play {
+  font-family: "Cairo Play", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-variation-settings: "slnt" 0;
+}
+
+.cairo-play-blue {
+  font-family: "Cairo Play", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-variation-settings: "slnt" 0;
+  color: #0284c7;
+}
+
+.cairo-play-green {
+  font-family: "Cairo Play", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-variation-settings: "slnt" 0;
+  color: #059669;
+}
+
+.text-gradient-cairo-blue-green {
+  font-family: "Cairo Play", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-variation-settings: "slnt" 0;
+  background: linear-gradient(135deg, #0284c7 0%, #06b6d4 40%, #10b981 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Custom light gradients & pin glow */
+.glow-pin {
+  filter: drop-shadow(0 4px 10px rgba(6, 182, 212, 0.4)) drop-shadow(0 8px 16px rgba(168, 85, 247, 0.2));
+}
+
+.glow-cyan {
+  box-shadow: 0 10px 25px -5px rgba(6, 182, 212, 0.25);
+}
+
+.glow-purple {
+  box-shadow: 0 10px 25px -5px rgba(168, 85, 247, 0.25);
+}
+
+.glow-card {
+  box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.08), 0 0 1px 1px rgba(226, 232, 240, 0.8);
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+}
+
+.glass-card:hover {
+  border-color: rgba(6, 182, 212, 0.5);
+  box-shadow: 0 12px 30px -8px rgba(6, 182, 212, 0.15);
+}
+
+.text-gradient-rainbow {
+  background: linear-gradient(135deg, #0284c7 0%, #2563eb 25%, #7c3aed 50%, #db2777 75%, #ea580c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-cyan-blue {
+  background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.bg-gradient-rainbow {
+  background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 20%, #8b5cf6 40%, #ec4899 60%, #f97316 80%, #10b981 100%);
+}
+
+.bg-gradient-btn {
+  background: linear-gradient(135deg, #0284c7 0%, #2563eb 50%, #7c3aed 100%);
+}
+
+.bg-gradient-btn:hover {
+  background: linear-gradient(135deg, #0369a1 0%, #1d4ed8 50%, #6d28d9 100%);
+}
+
+/* Custom scrollbars for light mode */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Leaflet & OpenStreetMap Clean Theme & Marker Styling */
+.leaflet-container {
+  font-family: inherit !important;
+  background-color: #f1f5f9 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1 !important;
+}
+
+.custom-leaflet-civic-marker,
+.custom-leaflet-report-pin {
+  background: transparent !important;
+  border: none !important;
+}
+
+.leaflet-control-attribution {
+  background-color: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(8px) !important;
+  border-radius: 8px !important;
+  padding: 2px 8px !important;
+  font-size: 10px !important;
+  color: #64748b !important;
+  margin: 8px !important;
+}
+
+.leaflet-control-attribution a {
+  color: #0284c7 !important;
+  text-decoration: none !important;
+}
+
+.leaflet-control-attribution a:hover {
+  text-decoration: underline !important;
+}
+
+.leaflet-custom-tooltip {
+  background: rgba(255, 255, 255, 0.98) !important;
+  color: #0f172a !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 14px !important;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.12), 0 4px 6px -4px rgba(15, 23, 42, 0.05) !important;
+  padding: 8px 12px !important;
+  font-family: inherit !important;
+}
+
+.leaflet-custom-tooltip::before {
+  border-top-color: #ffffff !important;
+}
+
+.leaflet-popup-content-wrapper {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.1) !important;
+  padding: 4px !important;
+}
+
+.leaflet-popup-tip {
+  background: #ffffff !important;
+}

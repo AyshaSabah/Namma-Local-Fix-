@@ -1,0 +1,11 @@
+{
+  "name": "Namma Local Fix",
+  "description": "Report. Track. Transform. A civic-tech community platform for Bengaluru to report civic issues, clean surroundings, track resolution, and earn Namma Points.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
