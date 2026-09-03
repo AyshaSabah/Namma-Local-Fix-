@@ -141,7 +141,10 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({
   const [selectedPinIssue, setSelectedPinIssue] = useState<Issue | null>(null);
   const [mapSearchText, setMapSearchText] = useState('');
   const [isStyleDropdownOpen, setIsStyleDropdownOpen] = useState(false);
-  const [isHotspotPanelOpen, setIsHotspotPanelOpen] = useState<boolean>(!isCompact);
+  const [isHotspotPanelOpen, setIsHotspotPanelOpen] = useState<boolean>(() => {
+    if (isCompact) return false;
+    return typeof window !== 'undefined' ? window.innerWidth >= 768 : false;
+  });
   const [currentZoom, setCurrentZoom] = useState<number>(isCompact ? 11 : 12);
   const [currentCenter, setCurrentCenter] = useState<{ lat: number; lng: number }>({
     lat: 12.9902,
@@ -600,7 +603,7 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({
           </div>
 
           {/* Right Top Bar: Heatmap Layer Mode & Style Switcher */}
-          <div className="pointer-events-auto flex items-center gap-2 self-end md:self-auto flex-wrap sm:flex-nowrap">
+          <div className="pointer-events-auto flex items-center justify-between sm:justify-start gap-2 w-full sm:w-auto">
             {/* View Mode Segmented Selector (Both / Heatmap / Pins) */}
             <div className="flex items-center p-1 rounded-2xl bg-white/95 border border-slate-200 shadow-lg backdrop-blur-xl">
               <button
@@ -804,57 +807,67 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({
 
       {/* Interactive Bengaluru Civic Heatmap & Hotspots Drawer (Bottom Left) */}
       {!isCompact && (
-        <div className="absolute left-4 bottom-4 z-10 pointer-events-auto max-w-sm sm:max-w-md w-full">
-          <div className="rounded-3xl bg-white/95 border border-slate-200 backdrop-blur-2xl shadow-xl overflow-hidden text-slate-800 transition-all">
-            {/* Hotspot Header */}
-            <div className="px-3.5 py-2.5 flex items-center justify-between border-b border-slate-100 bg-slate-50/70">
-              <div className="flex items-center gap-2">
-                <span className="p-1 rounded-lg bg-orange-100 text-orange-600">
-                  <Flame className="w-4 h-4 animate-pulse" />
-                </span>
-                <div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-black text-slate-900 font-['Outfit']">
-                      Bengaluru Civic Heatmap
-                    </span>
-                    <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-orange-100 text-orange-800 font-bold">
-                      {filteredIssues.length} issues
-                    </span>
+        <div className="absolute left-3 bottom-3 sm:left-4 sm:bottom-4 z-10 pointer-events-auto max-w-[calc(100%-4.5rem)] sm:max-w-md">
+          {!isHotspotPanelOpen ? (
+            <button
+              id="open-hotspots-pill-btn"
+              onClick={() => setIsHotspotPanelOpen(true)}
+              className="flex items-center gap-2 px-3.5 py-2.5 rounded-2xl bg-white/95 border border-slate-200 backdrop-blur-2xl shadow-xl hover:bg-slate-50 transition-all text-xs font-black text-slate-900 group"
+            >
+              <span className="p-1 rounded-lg bg-orange-100 text-orange-600 group-hover:scale-110 transition-transform">
+                <Flame className="w-4 h-4 animate-pulse" />
+              </span>
+              <span>Civic Heatmap</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-orange-100 text-orange-800 font-bold">
+                {hotspots.length} hotspots
+              </span>
+            </button>
+          ) : (
+            <div className="rounded-3xl bg-white/95 border border-slate-200 backdrop-blur-2xl shadow-xl overflow-hidden text-slate-800 transition-all">
+              {/* Hotspot Header */}
+              <div className="px-3.5 py-2.5 flex items-center justify-between border-b border-slate-100 bg-slate-50/70">
+                <div className="flex items-center gap-2">
+                  <span className="p-1 rounded-lg bg-orange-100 text-orange-600">
+                    <Flame className="w-4 h-4 animate-pulse" />
+                  </span>
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-black text-slate-900 font-['Outfit']">
+                        Bengaluru Civic Heatmap
+                      </span>
+                      <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-orange-100 text-orange-800 font-bold">
+                        {filteredIssues.length} issues
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-slate-500 font-medium">
+                      {viewMode === 'pins'
+                        ? 'Heatmap paused (Pins Mode)'
+                        : 'Density concentration across wards'}
+                    </p>
                   </div>
-                  <p className="text-[10px] text-slate-500 font-medium">
-                    {viewMode === 'pins'
-                      ? 'Heatmap paused (Pins Mode)'
-                      : 'Density concentration across wards'}
-                  </p>
                 </div>
+
+                <button
+                  onClick={() => setIsHotspotPanelOpen(false)}
+                  className="text-xs font-bold text-cyan-700 hover:text-cyan-800 px-2 py-1 rounded-lg hover:bg-cyan-50 transition-colors flex items-center gap-1"
+                >
+                  <span>Close</span>
+                  <ChevronDown className="w-3.5 h-3.5" />
+                </button>
               </div>
 
-              <button
-                onClick={() => setIsHotspotPanelOpen(!isHotspotPanelOpen)}
-                className="text-xs font-bold text-cyan-700 hover:text-cyan-800 px-2 py-1 rounded-lg hover:bg-cyan-50 transition-colors flex items-center gap-1"
-              >
-                <span>{isHotspotPanelOpen ? 'Collapse' : 'Hotspots'}</span>
-                <ChevronDown
-                  className={`w-3.5 h-3.5 transition-transform ${
-                    isHotspotPanelOpen ? 'rotate-180' : ''
-                  }`}
-                />
-              </button>
-            </div>
-
-            {/* Density Gradient Scale Bar */}
-            <div className="px-3.5 py-2 border-b border-slate-100 bg-white">
-              <div className="flex items-center justify-between text-[10px] font-bold text-slate-500 mb-1">
-                <span>Low Density</span>
-                <span>Medium</span>
-                <span className="text-orange-600">High Concentration</span>
-                <span className="text-rose-600 font-black">Critical Hotspot</span>
+              {/* Density Gradient Scale Bar */}
+              <div className="px-3.5 py-2 border-b border-slate-100 bg-white">
+                <div className="flex items-center justify-between text-[10px] font-bold text-slate-500 mb-1">
+                  <span>Low Density</span>
+                  <span>Medium</span>
+                  <span className="text-orange-600">High Concentration</span>
+                  <span className="text-rose-600 font-black">Critical Hotspot</span>
+                </div>
+                <div className="h-2 w-full rounded-full bg-gradient-to-r from-cyan-400 via-emerald-400 via-amber-400 via-orange-500 to-rose-600 shadow-inner" />
               </div>
-              <div className="h-2 w-full rounded-full bg-gradient-to-r from-cyan-400 via-emerald-400 via-amber-400 via-orange-500 to-rose-600 shadow-inner" />
-            </div>
 
-            {/* Top Hotspots Quick Jump List */}
-            {isHotspotPanelOpen && (
+              {/* Top Hotspots Quick Jump List */}
               <div className="p-3 space-y-2 max-h-48 overflow-y-auto scrollbar-thin">
                 <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400 flex items-center justify-between">
                   <span>Top Concentration Clusters</span>
@@ -915,8 +928,8 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({
                   </div>
                 </div>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       )}
 

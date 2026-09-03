@@ -1,26 +1,35 @@
 import {
+  ArrowUpRight,
   Award,
   Bookmark,
   Camera,
   Check,
   CheckCircle2,
+  ChevronRight,
   Clock,
+  Crown,
   Edit3,
   Flame,
+  HelpCircle,
   Image,
   Layers,
   MapPin,
+  Medal,
   Plus,
+  Search,
   Settings,
   Shield,
   Sparkles,
   Trash2,
+  TrendingUp,
+  Trophy,
   Upload,
   User,
   X,
 } from 'lucide-react';
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { LEADERBOARD_USERS } from '../data/bengaluruData';
 import { GradientStar } from './GradientStar';
 
 const AVATAR_PRESETS = [
@@ -33,8 +42,15 @@ const AVATAR_PRESETS = [
 ];
 
 export const ProfileView: React.FC = () => {
-  const { user, updateUserProfile, issues, cleanupDrives, setSelectedIssueId, setIsReportModalOpen } = useApp();
+  const { user, updateUserProfile, issues, cleanupDrives, setSelectedIssueId, setIsReportModalOpen, setActiveTab } = useApp();
   const [profileTab, setProfileTab] = useState<'reports' | 'saved' | 'cleanups' | 'badges'>('reports');
+
+  // Scoreboard Modal State
+  const [isScoreboardOpen, setIsScoreboardOpen] = useState<boolean>(false);
+  const [scoreboardTimeframe, setScoreboardTimeframe] = useState<'weekly' | 'monthly' | 'all_time'>('monthly');
+  const [scoreboardSearch, setScoreboardSearch] = useState<string>('');
+  const [selectedScoreboardWard, setSelectedScoreboardWard] = useState<string>('all');
+  const [showHowPointsWork, setShowHowPointsWork] = useState<boolean>(false);
 
   // Edit Profile State
   const [isEditingProfile, setIsEditingProfile] = useState<boolean>(false);
@@ -82,6 +98,77 @@ export const ProfileView: React.FC = () => {
   const myReportedIssues = issues.filter((i) => i.reportedBy.id === user.id);
   const mySavedIssues = issues.filter((i) => user.savedIssueIds.includes(i.id));
   const myJoinedDrives = cleanupDrives.filter((d) => d.joinedUserIds.includes(user.id));
+
+  // Extract all unique wards for filtering
+  const wardsList = useMemo(() => {
+    const set = new Set<string>();
+    LEADERBOARD_USERS.forEach((u) => {
+      if (u.area) set.add(u.area);
+    });
+    if (user.area) set.add(user.area);
+    return ['all', ...Array.from(set)];
+  }, [user.area]);
+
+  // Compute live scoreboard users including the current user's live points
+  const scoreboardUsers = useMemo(() => {
+    const currentUserItem = {
+      id: user.id,
+      name: user.name,
+      username: user.username,
+      avatar: user.avatar,
+      points: user.points,
+      level: user.level,
+      levelTitle: user.levelTitle,
+      area: user.area || 'Koramangala',
+      reports: user.issuesReported,
+      cleanups: user.cleanupsJoined,
+      isCurrentUser: true,
+    };
+
+    let list = LEADERBOARD_USERS.map((u) => ({
+      ...u,
+      isCurrentUser: u.id === user.id || u.username === user.username,
+    }));
+
+    if (!list.some((u) => u.isCurrentUser)) {
+      list.push(currentUserItem);
+    } else {
+      list = list.map((u) =>
+        u.isCurrentUser
+          ? {
+              ...u,
+              name: user.name,
+              avatar: user.avatar,
+              points: user.points,
+              reports: user.issuesReported,
+              cleanups: user.cleanupsJoined,
+              levelTitle: user.levelTitle,
+            }
+          : u
+      );
+    }
+
+    // Adapt points based on timeframe tab
+    const multiplier = scoreboardTimeframe === 'weekly' ? 0.35 : scoreboardTimeframe === 'monthly' ? 1 : 2.4;
+    const formattedList = list.map((u) => ({
+      ...u,
+      displayPoints: Math.round(u.points * multiplier),
+    }));
+
+    formattedList.sort((a, b) => b.displayPoints - a.displayPoints);
+
+    return formattedList.filter((u) => {
+      const matchesSearch =
+        scoreboardSearch === '' ||
+        u.name.toLowerCase().includes(scoreboardSearch.toLowerCase()) ||
+        u.username.toLowerCase().includes(scoreboardSearch.toLowerCase()) ||
+        u.area.toLowerCase().includes(scoreboardSearch.toLowerCase());
+
+      const matchesWard = selectedScoreboardWard === 'all' || u.area === selectedScoreboardWard;
+
+      return matchesSearch && matchesWard;
+    });
+  }, [user, scoreboardTimeframe, scoreboardSearch, selectedScoreboardWard]);
 
   return (
     <div id="profile-page" className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-in fade-in duration-300">
@@ -135,17 +222,48 @@ export const ProfileView: React.FC = () => {
             </div>
           </div>
 
-          {/* Points Card */}
-          <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200 text-center sm:text-right space-y-1 w-full sm:w-auto flex-shrink-0">
+          {/* Points & Scoreboard Trigger Card */}
+          <div
+            id="profile-scoreboard-card"
+            role="button"
+            tabIndex={0}
+            onClick={() => setIsScoreboardOpen(true)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setIsScoreboardOpen(true);
+              }
+            }}
+            aria-label="Open Bengaluru People's Scoreboard & City Rankings"
+            title="Click to view people's scoreboard, city rankings & ward leaders"
+            className="cursor-pointer group relative overflow-hidden p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-amber-50 via-white to-amber-100/70 border-2 border-amber-300 hover:border-amber-400 hover:shadow-lg hover:shadow-amber-500/15 active:scale-[0.98] transition-all duration-200 text-center sm:text-right space-y-1.5 w-full sm:w-auto flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-amber-500/50 select-none"
+          >
+            {/* Ambient hover light */}
+            <div className="absolute top-0 right-0 -mr-6 -mt-6 w-24 h-24 bg-amber-400/20 rounded-full blur-xl pointer-events-none group-hover:bg-amber-400/35 transition-colors" />
+
             <div className="flex items-center justify-center sm:justify-end gap-1.5 text-amber-700">
-              <GradientStar className="w-5 h-5" />
-              <span className="text-2xl sm:text-3xl font-black font-['Outfit'] text-amber-900">
+              <GradientStar className="w-5 h-5 transition-transform group-hover:scale-110" />
+              <span className="text-2xl sm:text-3xl font-black font-['Outfit'] text-amber-900 tracking-tight">
                 {user.points.toLocaleString()}
               </span>
             </div>
-            <p className="text-[11px] text-slate-500 font-bold">Total Namma Points</p>
-            <div className="text-[10px] text-cyan-700 font-bold pt-1">
-              Bengaluru Rank: #{user.rank}
+
+            <p className="text-[11px] text-slate-600 font-bold">Total Namma Points</p>
+
+            <div className="flex items-center justify-center sm:justify-end gap-1.5 pt-0.5">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-cyan-100 text-cyan-900 text-[10px] font-bold border border-cyan-200 shadow-xs">
+                <Trophy className="w-3 h-3 text-amber-600 shrink-0" />
+                Bengaluru Rank #{user.rank}
+              </span>
+            </div>
+
+            {/* Click to View Scoreboard CTA pill */}
+            <div className="pt-1 flex items-center justify-center sm:justify-end">
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-black text-amber-900 group-hover:text-amber-950 transition-all bg-amber-200/70 group-hover:bg-amber-300/90 px-3 py-1 rounded-full border border-amber-400/70 shadow-xs">
+                <Trophy className="w-3.5 h-3.5 text-amber-700 group-hover:rotate-6 transition-transform" />
+                <span>View People's Scoreboard</span>
+                <ChevronRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+              </span>
             </div>
           </div>
         </div>
@@ -485,6 +603,326 @@ export const ProfileView: React.FC = () => {
               )}
             </div>
           ))}
+        </div>
+      )}
+
+      {/* PEOPLE'S SCOREBOARD MODAL */}
+      {isScoreboardOpen && (
+        <div
+          id="scoreboard-modal-backdrop"
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsScoreboardOpen(false);
+          }}
+        >
+          <div
+            id="peoples-scoreboard-modal"
+            className="w-full max-w-2xl max-h-[90vh] bg-white rounded-3xl border border-slate-200 shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200"
+          >
+            {/* Modal Header */}
+            <div className="p-5 sm:p-6 border-b border-slate-100 bg-gradient-to-r from-amber-50/80 via-cyan-50/50 to-emerald-50/60 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-2xl bg-amber-100 border border-amber-300 text-amber-800 flex items-center justify-center shadow-xs">
+                  <Trophy className="w-6 h-6 text-amber-600" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-xl font-black text-slate-900 font-['Outfit']">
+                      Bengaluru People's Scoreboard
+                    </h3>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 font-bold border border-amber-300">
+                      Live
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 font-medium mt-0.5">
+                    Citywide citizen rankings, verified points & ward impact
+                  </p>
+                </div>
+              </div>
+
+              <button
+                id="close-scoreboard-modal-btn"
+                onClick={() => setIsScoreboardOpen(false)}
+                className="w-8 h-8 rounded-full bg-white border border-slate-200 text-slate-500 hover:text-slate-900 hover:bg-slate-100 flex items-center justify-center transition-colors shadow-xs shrink-0"
+                aria-label="Close scoreboard"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Controls: Timeframe, Search, and Ward Filters */}
+            <div className="p-4 sm:p-5 border-b border-slate-100 space-y-3 bg-slate-50/50">
+              {/* User Standing Strip */}
+              <div className="p-3 rounded-2xl bg-white border border-amber-200/80 flex items-center justify-between gap-3 shadow-xs">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <img
+                      src={user.avatar}
+                      alt={user.name}
+                      referrerPolicy="no-referrer"
+                      className="w-10 h-10 rounded-full object-cover ring-2 ring-amber-400"
+                    />
+                    <span className="absolute -bottom-1 -right-1 px-1 rounded-full bg-cyan-600 text-white text-[9px] font-black">
+                      YOU
+                    </span>
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-xs sm:text-sm font-bold text-slate-900 font-['Outfit']">{user.name}</p>
+                      <span className="text-[10px] text-slate-500">({user.area || 'Koramangala'})</span>
+                    </div>
+                    <p className="text-[11px] text-cyan-700 font-semibold">
+                      Rank #{user.rank} • {user.levelTitle}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="text-right">
+                  <div className="flex items-center justify-end gap-1 text-amber-800 font-black text-sm sm:text-base font-['Outfit']">
+                    <GradientStar className="w-4 h-4" />
+                    <span>{user.points.toLocaleString()}</span>
+                  </div>
+                  <span className="text-[10px] text-slate-500 font-bold">Namma Points</span>
+                </div>
+              </div>
+
+              {/* Timeframe selector + Search input */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+                {/* Timeframe pills */}
+                <div className="inline-flex items-center p-1 rounded-xl bg-white border border-slate-200 shadow-xs">
+                  {[
+                    { id: 'weekly', label: 'This Week' },
+                    { id: 'monthly', label: 'This Month' },
+                    { id: 'all_time', label: 'All Time' },
+                  ].map((tab) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setScoreboardTimeframe(tab.id as any)}
+                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                        scoreboardTimeframe === tab.id
+                          ? 'bg-gradient-to-r from-cyan-500 to-emerald-500 text-white shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Search Bar */}
+                <div className="relative flex-1 max-w-xs">
+                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={scoreboardSearch}
+                    onChange={(e) => setScoreboardSearch(e.target.value)}
+                    placeholder="Search citizens or ward..."
+                    className="w-full pl-8 pr-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/30"
+                  />
+                  {scoreboardSearch && (
+                    <button
+                      onClick={() => setScoreboardSearch('')}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Ward filter chips */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs">
+                <span className="text-[11px] font-bold text-slate-500 flex items-center gap-1 pr-1 shrink-0">
+                  <MapPin className="w-3 h-3 text-cyan-600" /> Wards:
+                </span>
+                {wardsList.map((ward) => (
+                  <button
+                    key={ward}
+                    onClick={() => setSelectedScoreboardWard(ward)}
+                    className={`px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap transition-colors shrink-0 ${
+                      selectedScoreboardWard === ward
+                        ? 'bg-slate-900 text-white'
+                        : 'bg-white border border-slate-200 text-slate-600 hover:border-slate-300'
+                    }`}
+                  >
+                    {ward === 'all' ? 'All Bengaluru' : ward}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Scrollable Scoreboard List */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-2.5 divide-y divide-slate-100">
+              {scoreboardUsers.length === 0 ? (
+                <div className="text-center py-10 text-slate-500 text-xs">
+                  No contributors found matching "{scoreboardSearch}". Try searching another name or ward.
+                </div>
+              ) : (
+                scoreboardUsers.map((person, idx) => {
+                  const rank = idx + 1;
+                  const isTop1 = rank === 1;
+                  const isTop2 = rank === 2;
+                  const isTop3 = rank === 3;
+
+                  return (
+                    <div
+                      key={person.id || person.username}
+                      className={`pt-2.5 first:pt-0 flex items-center justify-between gap-3 p-2 rounded-2xl transition-colors ${
+                        person.isCurrentUser
+                          ? 'bg-cyan-50/70 border border-cyan-300/80 shadow-xs'
+                          : isTop1
+                          ? 'bg-amber-50/40'
+                          : 'hover:bg-slate-50'
+                      }`}
+                    >
+                      {/* Left: Rank badge, Avatar, Name & Ward */}
+                      <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                        {/* Rank Badge */}
+                        <div className="w-8 flex items-center justify-center shrink-0">
+                          {isTop1 && (
+                            <div className="w-7 h-7 rounded-xl bg-amber-400 text-amber-950 font-black text-xs flex items-center justify-center shadow-xs ring-2 ring-amber-200">
+                              <Crown className="w-4 h-4" />
+                            </div>
+                          )}
+                          {isTop2 && (
+                            <div className="w-7 h-7 rounded-xl bg-slate-200 text-slate-800 font-black text-xs flex items-center justify-center shadow-xs ring-2 ring-slate-300">
+                              #2
+                            </div>
+                          )}
+                          {isTop3 && (
+                            <div className="w-7 h-7 rounded-xl bg-amber-700 text-amber-50 font-black text-xs flex items-center justify-center shadow-xs ring-2 ring-amber-600">
+                              #3
+                            </div>
+                          )}
+                          {!isTop1 && !isTop2 && !isTop3 && (
+                            <span className="text-xs font-bold text-slate-400 font-mono">
+                              #{rank}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Avatar */}
+                        <div className="relative shrink-0">
+                          <img
+                            src={person.avatar}
+                            alt={person.name}
+                            referrerPolicy="no-referrer"
+                            className="w-10 h-10 rounded-full object-cover ring-2 ring-slate-200"
+                          />
+                          {isTop1 && (
+                            <span className="absolute -top-1 -right-1 text-xs">👑</span>
+                          )}
+                        </div>
+
+                        {/* Name & Details */}
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="text-xs sm:text-sm font-bold text-slate-900 font-['Outfit'] truncate">
+                              {person.name}
+                            </span>
+                            {person.isCurrentUser && (
+                              <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-cyan-600 text-white font-black">
+                                YOU
+                              </span>
+                            )}
+                            <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-slate-100 text-slate-600 font-medium">
+                              {person.area}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-[10px] text-slate-500 font-medium mt-0.5">
+                            <span className="text-cyan-700 font-semibold">{person.levelTitle}</span>
+                            <span>•</span>
+                            <span>{person.reports} reports</span>
+                            <span>•</span>
+                            <span>{person.cleanups} cleanups</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Right: Points */}
+                      <div className="text-right shrink-0">
+                        <div className="flex items-center justify-end gap-1 text-amber-900 font-black text-xs sm:text-sm font-['Outfit']">
+                          <GradientStar className="w-3.5 h-3.5" />
+                          <span>{person.displayPoints.toLocaleString()}</span>
+                        </div>
+                        <span className="text-[9px] text-slate-400 font-semibold uppercase">points</span>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+
+              {/* How points work accordion */}
+              <div className="pt-4 mt-4 border-t border-slate-200">
+                <button
+                  onClick={() => setShowHowPointsWork(!showHowPointsWork)}
+                  className="w-full flex items-center justify-between p-3 rounded-2xl bg-amber-50/60 border border-amber-200 text-left hover:bg-amber-100/60 transition-colors"
+                >
+                  <div className="flex items-center gap-2 text-xs font-bold text-amber-900">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                    <span>How to score points & climb the scoreboard</span>
+                  </div>
+                  <ChevronRight
+                    className={`w-4 h-4 text-amber-700 transition-transform ${
+                      showHowPointsWork ? 'rotate-90' : ''
+                    }`}
+                  />
+                </button>
+
+                {showHowPointsWork && (
+                  <div className="mt-2.5 p-3.5 rounded-2xl bg-white border border-amber-200 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-600 animate-in fade-in">
+                    <div className="flex items-center gap-2">
+                      <span className="w-6 h-6 rounded-full bg-cyan-100 text-cyan-800 font-black text-[10px] flex items-center justify-center shrink-0">
+                        +10
+                      </span>
+                      <span>Report civic issue or road pothole</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 font-black text-[10px] flex items-center justify-center shrink-0">
+                        +30
+                      </span>
+                      <span>Complete a neighborhood cleanup drive</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="w-6 h-6 rounded-full bg-purple-100 text-purple-800 font-black text-[10px] flex items-center justify-center shrink-0">
+                        +15
+                      </span>
+                      <span>Upload verified before/after photo proof</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="w-6 h-6 rounded-full bg-amber-100 text-amber-800 font-black text-[10px] flex items-center justify-center shrink-0">
+                        +2
+                      </span>
+                      <span>Upvote and verify neighborhood issues</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between gap-3">
+              <button
+                id="open-full-leaderboard-btn"
+                onClick={() => {
+                  setIsScoreboardOpen(false);
+                  setActiveTab('leaderboard');
+                }}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-slate-950 bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 hover:opacity-95 shadow-md shadow-cyan-500/20 active:scale-95 transition-all"
+              >
+                <Trophy className="w-4 h-4 text-slate-950" />
+                <span>Open Full Champions Page</span>
+                <ArrowUpRight className="w-3.5 h-3.5" />
+              </button>
+
+              <button
+                onClick={() => setIsScoreboardOpen(false)}
+                className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 bg-white border border-slate-200 hover:bg-slate-100 transition-colors shadow-xs"
+              >
+                Close
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

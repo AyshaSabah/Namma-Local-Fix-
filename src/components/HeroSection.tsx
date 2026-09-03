@@ -60,33 +60,35 @@ export const HeroSection: React.FC = () => {
             </p>
 
             {/* Action Buttons */}
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3.5 pt-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-2.5 sm:gap-3.5 pt-2">
               <button
                 id="hero-report-btn"
                 onClick={() => setIsReportModalOpen(true)}
-                className="flex items-center gap-2.5 px-6 py-3.5 rounded-xl text-sm font-black text-slate-950 bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 hover:opacity-95 shadow-lg shadow-cyan-500/20 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+                className="flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl text-sm font-black text-slate-950 bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 hover:opacity-95 shadow-lg shadow-cyan-500/20 transition-all active:scale-[0.98]"
               >
                 <Plus className="w-5 h-5 text-slate-950 stroke-[3]" />
                 <span>Report an Issue</span>
               </button>
 
-              <button
-                id="hero-explore-map-btn"
-                onClick={() => setActiveTab('map')}
-                className="flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold text-slate-800 bg-white border border-slate-200 hover:border-cyan-400 hover:bg-slate-50 transition-all shadow-xs"
-              >
-                <Compass className="w-4 h-4 text-cyan-600" />
-                <span>Explore Bengaluru</span>
-              </button>
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <button
+                  id="hero-explore-map-btn"
+                  onClick={() => setActiveTab('map')}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl text-sm font-bold text-slate-800 bg-white border border-slate-200 hover:border-cyan-400 hover:bg-slate-50 transition-all shadow-xs"
+                >
+                  <Compass className="w-4 h-4 text-cyan-600" />
+                  <span>Explore Map</span>
+                </button>
 
-              <button
-                id="hero-cleancity-btn"
-                onClick={() => setActiveTab('cleancity')}
-                className="flex items-center gap-1.5 px-4 py-3.5 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition-all"
-              >
-                <GradientTrashBin className="w-4 h-4" />
-                <span>Clean City Squad</span>
-              </button>
+                <button
+                  id="hero-cleancity-btn"
+                  onClick={() => setActiveTab('cleancity')}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-3.5 rounded-xl text-xs sm:text-sm font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition-all"
+                >
+                  <GradientTrashBin className="w-4 h-4" />
+                  <span>Clean Squad</span>
+                </button>
+              </div>
             </div>
 
             {/* Live Bengaluru Feed Ticker */}

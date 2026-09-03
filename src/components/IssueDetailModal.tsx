@@ -75,10 +75,10 @@ export const IssueDetailModal: React.FC = () => {
     >
       <div
         id="issue-detail-modal-card"
-        className="relative w-full max-w-3xl bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden my-6 animate-in fade-in zoom-in-95 duration-200"
+        className="relative w-full max-w-3xl bg-white border border-slate-200 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden my-auto max-h-[92dvh] flex flex-col animate-in fade-in zoom-in-95 duration-200"
       >
         {/* Modal Top Nav Header */}
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50 flex-shrink-0">
           <div className="flex items-center gap-2">
             <span className="text-xs font-mono font-black text-cyan-800 bg-cyan-100 px-2.5 py-1 rounded-lg border border-cyan-200">
               #{issue.id}
@@ -88,11 +88,12 @@ export const IssueDetailModal: React.FC = () => {
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <button
               onClick={handleShare}
               className="p-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
               title="Share Issue"
+              aria-label="Share Issue"
             >
               <Share2 className="w-4 h-4" />
             </button>
@@ -100,6 +101,7 @@ export const IssueDetailModal: React.FC = () => {
               onClick={() => toggleBookmark(issue.id)}
               className="p-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
               title="Bookmark Issue"
+              aria-label="Bookmark Issue"
             >
               {isBookmarked ? (
                 <BookmarkCheck className="w-4 h-4 text-cyan-600" />
@@ -111,6 +113,7 @@ export const IssueDetailModal: React.FC = () => {
               id="close-issue-detail-btn"
               onClick={() => setSelectedIssueId(null)}
               className="p-2 rounded-lg text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+              aria-label="Close modal"
             >
               <X className="w-5 h-5" />
             </button>
@@ -118,7 +121,7 @@ export const IssueDetailModal: React.FC = () => {
         </div>
 
         {/* Modal Content Scrollable Body */}
-        <div className="p-6 max-h-[80vh] overflow-y-auto space-y-6">
+        <div className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-4 sm:space-y-6 scrollbar-thin">
           {/* Main Photo or Before/After Comparison */}
           {issue.resolvedBeforeAfter ? (
             <div className="space-y-2">
@@ -281,7 +284,7 @@ export const IssueDetailModal: React.FC = () => {
           </div>
 
           {/* Reporter Profile & Support Action CTA */}
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
             <div className="flex items-center gap-3">
               <img
                 src={issue.reportedBy.avatar}
@@ -300,7 +303,7 @@ export const IssueDetailModal: React.FC = () => {
             <button
               id={`support-issue-btn-${issue.id}`}
               onClick={() => supportIssue(issue.id)}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md ${
+              className={`flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md w-full sm:w-auto min-h-[42px] sm:min-h-0 ${
                 isSupported
                   ? 'bg-cyan-100 text-cyan-800 border border-cyan-300'
                   : 'bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 hover:opacity-95'

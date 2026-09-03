@@ -112,7 +112,7 @@ export const CategoryFilterGrid: React.FC = () => {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3.5">
           {categories.map((cat) => {
             const Icon = cat.icon;
             const count = getCount(cat.id);
@@ -124,25 +124,25 @@ export const CategoryFilterGrid: React.FC = () => {
                   setSelectedCategory(cat.id);
                   setActiveTab('map');
                 }}
-                className="p-4 rounded-2xl bg-white border border-slate-200 hover:border-cyan-400 hover:shadow-md text-left transition-all group flex flex-col justify-between hover:-translate-y-0.5"
+                className="p-3 sm:p-4 rounded-2xl bg-white border border-slate-200 hover:border-cyan-400 hover:shadow-md text-left transition-all group flex flex-col justify-between hover:-translate-y-0.5"
               >
-                <div className="flex items-start justify-between w-full mb-3">
+                <div className="flex items-start justify-between w-full mb-2 sm:mb-3">
                   <div
-                    className={`w-9 h-9 rounded-xl ${cat.color} border flex items-center justify-center`}
+                    className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl ${cat.color} border flex items-center justify-center`}
                   >
                     <Icon className="w-4 h-4" />
                   </div>
 
-                  <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 group-hover:text-cyan-800 group-hover:bg-cyan-50 border border-slate-200">
+                  <span className="text-[10px] sm:text-xs font-mono font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 group-hover:text-cyan-800 group-hover:bg-cyan-50 border border-slate-200 truncate">
                     {count} active
                   </span>
                 </div>
 
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900 font-['Outfit'] group-hover:text-cyan-700 transition-colors">
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 font-['Outfit'] group-hover:text-cyan-700 transition-colors line-clamp-1 sm:line-clamp-none">
                     {cat.title}
                   </h3>
-                  <p className="text-[11px] text-slate-500 mt-0.5 leading-snug line-clamp-2">
+                  <p className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 leading-snug line-clamp-2">
                     {cat.desc}
                   </p>
                 </div>

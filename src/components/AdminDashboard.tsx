@@ -121,12 +121,12 @@ export const AdminDashboard: React.FC = () => {
           />
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
           {/* Ward filter */}
           <select
             value={selectedWard}
             onChange={(e) => setSelectedWard(e.target.value)}
-            className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-800 font-medium"
+            className="w-full sm:w-auto px-3 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-800 font-medium text-xs"
           >
             <option value="All">All BBMP Areas</option>
             {BENGALURU_AREAS.map((a) => (
@@ -140,7 +140,7 @@ export const AdminDashboard: React.FC = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-800 font-medium"
+            className="w-full sm:w-auto px-3 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-800 font-medium text-xs"
           >
             <option value="All">All Statuses</option>
             <option value="Reported">Reported</option>
@@ -151,8 +151,75 @@ export const AdminDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Management Table */}
-      <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-md">
+      {/* Mobile Card View (shown on screens < md) */}
+      <div className="md:hidden space-y-3">
+        {filteredIssues.map((iss) => (
+          <div
+            key={iss.id}
+            className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3"
+          >
+            <div className="flex items-start gap-3">
+              <img
+                src={iss.imageUrl}
+                alt={iss.title}
+                referrerPolicy="no-referrer"
+                className="w-14 h-14 rounded-xl object-cover ring-1 ring-slate-200 flex-shrink-0"
+              />
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between gap-1">
+                  <span className="font-mono font-bold text-cyan-700 text-xs">#{iss.id}</span>
+                  <span
+                    className={`px-2 py-0.5 rounded-md font-bold text-[10px] ${
+                      iss.severity === 'Critical'
+                        ? 'bg-rose-100 text-rose-800'
+                        : iss.severity === 'High'
+                        ? 'bg-orange-100 text-orange-800'
+                        : 'bg-amber-100 text-amber-800'
+                    }`}
+                  >
+                    {iss.severity}
+                  </span>
+                </div>
+                <h4 className="font-bold text-slate-900 text-sm truncate font-['Outfit'] mt-0.5">
+                  {iss.title}
+                </h4>
+                <p className="text-[11px] text-slate-500 truncate">
+                  {iss.area} • <span className="text-purple-700 font-semibold">{iss.assignedAuthority || 'BBMP'}</span>
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
+              <select
+                value={iss.status}
+                onChange={(e) => handleStatusChange(iss.id, e.target.value as IssueStatus)}
+                className={`flex-1 min-h-[40px] px-3 py-1.5 rounded-xl text-xs font-bold border focus:outline-none ${
+                  iss.status === 'Resolved'
+                    ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                    : iss.status === 'In Progress'
+                    ? 'bg-amber-50 text-amber-800 border-amber-300'
+                    : 'bg-cyan-50 text-cyan-800 border-cyan-300'
+                }`}
+              >
+                <option value="Reported">Reported</option>
+                <option value="Verified">Verified</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Resolved">Resolved</option>
+              </select>
+
+              <button
+                onClick={() => setSelectedIssueId(iss.id)}
+                className="min-h-[40px] px-4 py-1.5 text-xs font-bold text-cyan-700 hover:text-cyan-800 border border-cyan-300 rounded-xl hover:bg-cyan-50 shadow-xs"
+              >
+                Inspect
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop Management Table (shown on screens >= md) */}
+      <div className="hidden md:block rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-md">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-bold">

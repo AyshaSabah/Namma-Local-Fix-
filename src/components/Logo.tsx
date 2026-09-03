@@ -22,11 +22,11 @@ export const Logo: React.FC<LogoProps> = ({
   };
 
   const titleSizes = {
-    sm: 'text-base',
-    md: 'text-xl',
-    lg: 'text-2xl',
-    xl: 'text-3xl',
-    '2xl': 'text-4xl',
+    sm: 'text-sm sm:text-base',
+    md: 'text-lg sm:text-xl',
+    lg: 'text-xl sm:text-2xl',
+    xl: 'text-2xl sm:text-3xl',
+    '2xl': 'text-3xl sm:text-4xl',
   };
 
   return (
@@ -285,19 +285,19 @@ export const Logo: React.FC<LogoProps> = ({
 
       <div className="flex flex-col">
         <div className="flex items-center gap-1.5 leading-none">
-          <span className={`font-black tracking-tight ${titleSizes[size]} text-slate-900 font-['Outfit']`}>
+          <span className={`font-black tracking-tight ${titleSizes[size]} text-slate-900 font-['Outfit'] whitespace-nowrap`}>
             Namma
           </span>
           <span
-            className={`font-black tracking-tight ${titleSizes[size]} text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 via-sky-600 to-emerald-600 vast-shadow-regular`}
-            style={{ fontFamily: '"Vast Shadow", serif', fontWeight: 400, fontStyle: 'normal' }}
+            className={`font-black tracking-tight ${titleSizes[size]} text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 via-sky-600 to-emerald-600 font-['Outfit'] whitespace-nowrap inline-block`}
+            style={{ fontFamily: '"Outfit", sans-serif' }}
           >
             Local Fix
           </span>
         </div>
 
         {showTagline && (
-          <div className="flex items-center gap-1.5 mt-1 text-[10px] sm:text-[11px] tracking-wider uppercase font-bold text-slate-500 font-['Cairo_Play']">
+          <div className="hidden sm:flex items-center gap-1.5 mt-1 text-[10px] sm:text-[11px] tracking-wider uppercase font-bold text-slate-500 font-['Cairo_Play']">
             <span className="text-cyan-600">Report.</span>
             <span className="text-blue-600">Track.</span>
             <span className="text-emerald-600">Transform.</span>

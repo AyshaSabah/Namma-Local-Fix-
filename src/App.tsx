@@ -65,24 +65,24 @@ const AppContent: React.FC = () => {
         )}
 
         {activeTab === 'map' && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div className="mb-4 flex items-center justify-between">
+          <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-2 sm:py-6">
+            <div className="mb-2 sm:mb-4 flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-black text-slate-900 font-['Outfit']">
+                <h1 className="text-lg sm:text-2xl font-black text-slate-900 font-['Outfit']">
                   Bengaluru Live Civic Map
                 </h1>
-                <p className="text-xs text-slate-600">
+                <p className="hidden sm:block text-xs text-slate-600">
                   Explore reported civic hazards, active garbage spots, and resolved transformations across all wards.
                 </p>
               </div>
               <button
                 onClick={() => setIsReportModalOpen(true)}
-                className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-slate-950 bg-gradient-to-r from-cyan-400 to-emerald-400 hover:opacity-95 shadow-md shadow-cyan-500/20"
+                className="flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-bold text-slate-950 bg-gradient-to-r from-cyan-400 to-emerald-400 hover:opacity-95 shadow-md shadow-cyan-500/20"
               >
-                + Pin New Issue
+                + Pin Issue
               </button>
             </div>
-            <ExploreMap height="calc(100vh - 12rem)" isCompact={false} />
+            <ExploreMap height="calc(100dvh - 10rem)" isCompact={false} />
           </div>
         )}
 

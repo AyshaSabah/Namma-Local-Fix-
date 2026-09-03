@@ -358,22 +358,22 @@ export const ReportIssueModal: React.FC = () => {
     >
       <div
         id="report-issue-modal-card"
-        className="relative w-full max-w-2xl bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-200"
+        className="relative w-full max-w-2xl bg-white border border-slate-200 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden my-auto max-h-[92dvh] flex flex-col animate-in fade-in zoom-in-95 duration-200"
       >
         {/* Header with Steps */}
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50 flex-shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-cyan-100 border border-cyan-300 flex items-center justify-center text-cyan-800 font-bold">
+            <div className="w-8 h-8 rounded-xl bg-cyan-100 border border-cyan-300 flex items-center justify-center text-cyan-800 font-bold flex-shrink-0">
               {step === 4 ? '✓' : step}
             </div>
             <div>
-              <h3 className="text-base font-bold text-slate-900 font-['Outfit']">
+              <h3 className="text-sm sm:text-base font-bold text-slate-900 font-['Outfit']">
                 {step === 1 && 'Step 1: Upload Photo'}
                 {step === 2 && 'Step 2: Pin Location'}
                 {step === 3 && 'Step 3: Details & Verification'}
                 {step === 4 && 'Report Completed!'}
               </h3>
-              <p className="text-xs text-slate-500 font-medium">
+              <p className="text-[11px] sm:text-xs text-slate-500 font-medium">
                 {step === 1 && 'Show us what is wrong with AI visual detection'}
                 {step === 2 && 'Move pin to precise Bengaluru coordinates'}
                 {step === 3 && 'Review AI severity & submit report'}
@@ -385,7 +385,8 @@ export const ReportIssueModal: React.FC = () => {
           <button
             id="close-report-modal-btn"
             onClick={() => setIsReportModalOpen(false)}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+            className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+            aria-label="Close modal"
           >
             <X className="w-5 h-5" />
           </button>
@@ -393,7 +394,7 @@ export const ReportIssueModal: React.FC = () => {
 
         {/* Step Indicator Bar */}
         {step < 4 && (
-          <div className="px-6 pt-3 flex items-center gap-2">
+          <div className="px-4 sm:px-6 pt-3 flex items-center gap-2 flex-shrink-0">
             {[1, 2, 3].map((s) => (
               <div
                 key={s}
@@ -410,7 +411,7 @@ export const ReportIssueModal: React.FC = () => {
         )}
 
         {/* Body Content */}
-        <div className="p-6">
+        <div className="p-4 sm:p-6 overflow-y-auto flex-1 scrollbar-thin">
           {/* STEP 1: PHOTO & AI DETECTION */}
           {step === 1 && (
             <div className="space-y-5 animate-in fade-in duration-300">
