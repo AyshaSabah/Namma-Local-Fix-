@@ -33,10 +33,10 @@ import { LEADERBOARD_USERS } from '../data/bengaluruData';
 import { GradientStar } from './GradientStar';
 
 const AVATAR_PRESETS = [
-  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
   'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
   'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
   'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80',
 ];
@@ -88,7 +88,9 @@ export const ProfileView: React.FC = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         if (typeof reader.result === 'string') {
-          setEditAvatar(reader.result);
+          const imgData = reader.result;
+          setEditAvatar(imgData);
+          updateUserProfile({ avatar: imgData });
         }
       };
       reader.readAsDataURL(file);
@@ -324,13 +326,14 @@ export const ProfileView: React.FC = () => {
                 </label>
                 <div className="flex items-center gap-4">
                   <img
+                    id="edit-profile-preview-img"
                     src={editAvatar}
                     alt="Preview"
                     referrerPolicy="no-referrer"
-                    className="w-16 h-16 rounded-2xl object-cover ring-2 ring-cyan-500 shadow-sm flex-shrink-0"
+                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover ring-2 ring-cyan-500 shadow-md flex-shrink-0 transition-all"
                   />
                   <div className="flex-1 space-y-2">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
@@ -338,6 +341,18 @@ export const ProfileView: React.FC = () => {
                       >
                         <Upload className="w-3.5 h-3.5" />
                         <span>Upload Photo</span>
+                      </button>
+                      <button
+                        type="button"
+                        id="save-profile-img-btn"
+                        onClick={() => {
+                          updateUserProfile({ avatar: editAvatar });
+                        }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-bold transition-all shadow-xs"
+                        title="Save selected photo as your profile image"
+                      >
+                        <Check className="w-3.5 h-3.5" />
+                        <span>Save Image</span>
                       </button>
                       <input
                         ref={fileInputRef}
@@ -363,25 +378,40 @@ export const ProfileView: React.FC = () => {
                     Or pick an avatar preset:
                   </span>
                   <div className="flex items-center gap-2 overflow-x-auto pb-1">
-                    {AVATAR_PRESETS.map((preset, idx) => (
-                      <button
-                        key={idx}
-                        type="button"
-                        onClick={() => setEditAvatar(preset)}
-                        className={`relative rounded-xl overflow-hidden flex-shrink-0 transition-all ${
-                          editAvatar === preset
-                            ? 'ring-2 ring-cyan-600 scale-105'
-                            : 'opacity-70 hover:opacity-100'
-                        }`}
-                      >
-                        <img
-                          src={preset}
-                          alt={`Preset ${idx + 1}`}
-                          referrerPolicy="no-referrer"
-                          className="w-10 h-10 object-cover"
-                        />
-                      </button>
-                    ))}
+                    {AVATAR_PRESETS.map((preset, idx) => {
+                      const isSelected = editAvatar === preset;
+                      return (
+                        <button
+                          key={idx}
+                          type="button"
+                          id={`avatar-preset-btn-${idx + 1}`}
+                          onClick={() => {
+                            setEditAvatar(preset);
+                            updateUserProfile({ avatar: preset });
+                          }}
+                          className={`relative rounded-xl overflow-hidden flex-shrink-0 transition-all focus:outline-none ${
+                            isSelected
+                              ? 'ring-2 ring-cyan-600 scale-105 shadow-md'
+                              : 'opacity-75 hover:opacity-100 ring-1 ring-slate-200'
+                          }`}
+                          title={`Select & Save Avatar ${idx + 1}`}
+                        >
+                          <img
+                            src={preset}
+                            alt={`Preset ${idx + 1}`}
+                            referrerPolicy="no-referrer"
+                            className="w-10 h-10 object-cover"
+                          />
+                          {isSelected && (
+                            <div className="absolute inset-0 bg-cyan-600/25 flex items-center justify-center">
+                              <span className="w-4 h-4 rounded-full bg-cyan-600 text-white flex items-center justify-center text-[9px] font-black shadow-xs">
+                                ✓
+                              </span>
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               </div>

@@ -90,7 +90,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [activeTab, setActiveTab] = useState<NavigationTab>('home');
   const [issues, setIssues] = useState<Issue[]>(() => {
     const saved = localStorage.getItem('nlf_issues');
-    return saved ? JSON.parse(saved) : INITIAL_ISSUES;
+    if (!saved) return INITIAL_ISSUES;
+    try {
+      return JSON.parse(saved);
+    } catch {
+      return INITIAL_ISSUES;
+    }
   });
   const [cleanupDrives, setCleanupDrives] = useState<CleanupDrive[]>(() => {
     const saved = localStorage.getItem('nlf_cleanups');
@@ -98,7 +103,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   });
   const [user, setUser] = useState<UserProfile>(() => {
     const saved = localStorage.getItem('nlf_user');
-    return saved ? JSON.parse(saved) : INITIAL_USER;
+    if (!saved) return INITIAL_USER;
+    try {
+      return JSON.parse(saved);
+    } catch {
+      return INITIAL_USER;
+    }
   });
   const [notifications, setNotifications] = useState<NotificationItem[]>(() => {
     const saved = localStorage.getItem('nlf_notifications');
@@ -496,14 +506,46 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const updateUserProfile = (updates: Partial<UserProfile>) => {
-    setUser((prev) => ({
-      ...prev,
-      ...updates,
-    }));
+    setUser((prev) => {
+      const updated = {
+        ...prev,
+        ...updates,
+      };
+      try {
+        localStorage.setItem('nlf_user', JSON.stringify(updated));
+      } catch (err) {
+        console.error('Failed to save user in localStorage:', err);
+      }
+      return updated;
+    });
+
+    if (updates.avatar) {
+      setIssues((prevIssues) => {
+        const updatedIssues = prevIssues.map((issue) => {
+          if (issue.reportedBy?.id === user.id || issue.reportedBy?.username === user.username) {
+            return {
+              ...issue,
+              reportedBy: {
+                ...issue.reportedBy,
+                avatar: updates.avatar!,
+              },
+            };
+          }
+          return issue;
+        });
+        try {
+          localStorage.setItem('nlf_issues', JSON.stringify(updatedIssues));
+        } catch (err) {
+          console.error('Failed to save issues in localStorage:', err);
+        }
+        return updatedIssues;
+      });
+    }
+
     addToast({
       type: 'success',
       title: 'Profile Updated',
-      message: 'Your profile changes have been saved.',
+      message: 'Your profile picture and details have been saved.',
     });
   };
 
