@@ -226,26 +226,42 @@ export const Navbar: React.FC = () => {
           <button
             id="user-profile-nav"
             onClick={() => setActiveTab('profile')}
-            className="flex items-center gap-1.5 sm:gap-2 p-1 sm:pl-2.5 sm:pr-1.5 sm:py-1 rounded-full bg-white border border-slate-200 hover:border-cyan-400 active:scale-95 shadow-xs transition-all group shrink-0"
+            className={`flex items-center gap-1.5 sm:gap-2 md:gap-2.5 p-1 sm:py-1 sm:pl-1.5 sm:pr-2.5 md:pr-3 rounded-full border transition-all duration-200 group shrink-0 active:scale-95 ${
+              activeTab === 'profile'
+                ? 'bg-cyan-50/90 border-cyan-400 ring-2 ring-cyan-500/25 shadow-xs'
+                : 'bg-white border-slate-200 hover:border-cyan-400 hover:bg-slate-50/80 shadow-xs'
+            }`}
             title={`Profile: ${user.name} (${user.points} pts)`}
             aria-label={`User profile for ${user.name}, ${user.points} points`}
           >
-            <div className="hidden sm:flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-xs font-black shrink-0 whitespace-nowrap">
-              <GradientStar className="w-3.5 h-3.5 shrink-0" />
-              <span>{user.points.toLocaleString()}</span>
-              <span className="text-[9px] font-normal text-amber-700 hidden md:inline">pts</span>
-            </div>
-
+            {/* Profile Avatar */}
             <div className="relative shrink-0 flex items-center justify-center">
               <img
                 src={user.avatar}
                 alt={user.name}
                 referrerPolicy="no-referrer"
-                className="w-8 h-8 sm:w-7 sm:h-7 rounded-full object-cover ring-2 ring-cyan-500/30 group-hover:ring-cyan-500 shrink-0"
+                className="w-8 h-8 rounded-full object-cover ring-2 ring-cyan-500/30 group-hover:ring-cyan-500 transition-all shrink-0"
               />
               <span className="sm:hidden absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-amber-400 border-2 border-white flex items-center justify-center text-[8px] font-black text-amber-950 shadow-xs leading-none">
                 ★
               </span>
+            </div>
+
+            {/* Tablet/Laptop/Desktop Citizen Name & Rank */}
+            <div className="hidden md:flex flex-col text-left leading-tight">
+              <span className="text-xs font-bold text-slate-800 group-hover:text-cyan-700 transition-colors whitespace-nowrap max-w-[85px] md:max-w-[100px] xl:max-w-[130px] truncate">
+                {user.name}
+              </span>
+              <span className="text-[10px] text-slate-500 font-medium whitespace-nowrap truncate">
+                <span className="hidden xl:inline">Rank </span>#{user.rank}
+              </span>
+            </div>
+
+            {/* Points Badge */}
+            <div className="hidden sm:flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200/90 text-amber-900 text-xs font-black shrink-0 whitespace-nowrap shadow-2xs group-hover:bg-amber-100/80 transition-colors">
+              <GradientStar className="w-3.5 h-3.5 shrink-0" />
+              <span>{user.points.toLocaleString()}</span>
+              <span className="text-[9px] font-semibold text-amber-700 hidden md:inline">pts</span>
             </div>
           </button>
 
